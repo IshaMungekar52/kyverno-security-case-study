@@ -1,0 +1,32 @@
+
+name: Kyverno Security Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  policy-check:
+    name: Validate Kubernetes Security Policies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Kyverno CLI
+        uses: kyverno/action-install-cli@v0.2.0
+        with:
+          release: v1.19.1
+
+      - name: Verify Kyverno CLI
+        run: kyverno version
+
+      - name: Validate compliant Pod
+        run: kyverno apply policies/ --resource tests/compliant-pod.yaml
