@@ -1,0 +1,25 @@
+
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  name: require-resource-limits
+  namespace: default
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: require-cpu-memory-limits
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: "Every container must define CPU and memory limits."
+        pattern:
+          spec:
+            containers:
+              - resources:
+                  limits:
+                    cpu: "?*"
+                    memory: "?*"
